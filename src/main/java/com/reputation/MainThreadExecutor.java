@@ -46,7 +46,7 @@ public class MainThreadExecutor implements Runnable {
     }
 
     public static void main(String[] args) {
-        String uri = new Configuration("api.properties").get("clickhouse_reports");
+        String uri = new Configuration("api.properties").get("domain");
         new MainThreadExecutor(uri,10).run();
     }
 }

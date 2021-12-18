@@ -4,7 +4,6 @@ package com.reputation.concurrency;
 import com.google.gson.Gson;
 import com.reputation.conf.Configuration;
 import com.reputation.models.Metric;
-import com.reputation.pojo.Response;
 import com.reputation.rest.RestClient;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharSource;
