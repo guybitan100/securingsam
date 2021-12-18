@@ -2,13 +2,15 @@ package com.reputation.models;
 
 import org.springframework.http.HttpStatus;
 
+import java.net.http.HttpResponse;
+
 public class Metric {
     String threadName;
     long startTime = 0;
     long endTime = 0;
     long durationMs;
-    Object response;
-    HttpStatus httpStatus;
+    HttpResponse response;
+    int statusCode;
     String reportStatus;
 
     public String getThreadName() {
@@ -43,19 +45,19 @@ public class Metric {
         this.endTime = endTime;
     }
 
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
+    public int getStatusCode() {
+        return statusCode;
     }
 
-    public void setHttpStatus(HttpStatus httpStatus) {
-        this.httpStatus = httpStatus;
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
     }
 
     public Object getResponse() {
         return response;
     }
 
-    public void setResponse(Object response) {
+    public void setResponse(HttpResponse response) {
         this.response = response;
     }
 
@@ -73,7 +75,7 @@ public class Metric {
         sb.append("ThreadName: " + threadName);
         sb.append(" DurationSec: " + getDurationMs() / 1000);
         sb.append(" ReportStatus: " + getReportStatus());
-        sb.append(" HttpStatus: " + getHttpStatus());
+        sb.append(" HttpStatusCode: " + getStatusCode());
         return sb.toString();
     }
 }

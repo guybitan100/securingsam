@@ -2,20 +2,25 @@ package com.reputation.concurrency;
 
 import com.google.gson.Gson;
 import com.reputation.models.Metric;
-import com.reputation.rest.RestClient;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharSource;
 import com.google.common.io.CharStreams;
-import com.reputation.rest.RestClientNew;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 
 public class ThreadWorker implements Callable {
@@ -25,7 +30,6 @@ public class ThreadWorker implements Callable {
     private final Gson gson;
 
     public ThreadWorker(String uri) {
-        RestClient.disableSslVerification();
         this.uri = uri;
         metrics = new ArrayList<>();
         this.gson = new Gson();
@@ -42,15 +46,20 @@ public class ThreadWorker implements Callable {
     }
 
     public void execute() throws URISyntaxException, IOException, InterruptedException {
-        RestClientNew restClientNew = new RestClientNew();
         Metric metric = new Metric();
         metric.setStartTime(System.currentTimeMillis());
-        restClientNew.send(uri);
-        //metric.setResponse(response);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(uri))
+                .header("Authorization", "Token I_am_under_stress_when_I_test")
+                .timeout(Duration.of(10, SECONDS))
+                .GET()
+                .build();
+        HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        metric.setResponse(response);
         metric.setEndTime(System.currentTimeMillis());
         metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
         metric.setThreadName(Thread.currentThread().getName());
-        // metric.setHttpStatus(apiRestClient.getStatus());
+        metric.setStatusCode(response.statusCode());
         metrics.add(metric);
     }
 

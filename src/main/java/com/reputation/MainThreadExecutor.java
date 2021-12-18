@@ -1,10 +1,8 @@
 package com.reputation;
 
 import com.reputation.concurrency.ThreadWorker;
-import com.reputation.rest.RestClientNew;
 import org.apache.log4j.Logger;
 
-import java.net.http.HttpResponse;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +24,6 @@ public class MainThreadExecutor implements Runnable {
     private void runDomains() {
         Set<Callable<ThreadWorker>> callables = new HashSet<>();
         try {
-            HttpResponse response = new RestClientNew().send(uri);
             for (int i = 0; i < maxTreads; i++) {
                 callables.add(new ThreadWorker(uri));
             }
