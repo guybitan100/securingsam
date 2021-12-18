@@ -31,21 +31,6 @@ public class ThreadWorker implements Callable {
         this.gson = new Gson();
     }
 
-
-    public String getJsonAsString(String fileName) {
-        InputStream stream = getClass().getClassLoader().getResourceAsStream(fileName);
-        String jsonString = "";
-        try {
-            byte[] buffer = ByteStreams.toByteArray(stream);
-            Reader reader = CharSource.wrap(new String(buffer)).openStream();
-            jsonString = CharStreams.toString(reader);
-            reader.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        return jsonString;
-    }
-
     @Override
     public List<Metric> call() {
         try {
@@ -60,13 +45,28 @@ public class ThreadWorker implements Callable {
         RestClientNew restClientNew = new RestClientNew();
         Metric metric = new Metric();
         metric.setStartTime(System.currentTimeMillis());
-        restClientNew.send(uri);
+        restClientNew.send("https://candidate-eval.securingsam.com/domain/ranking/google.com");
         //metric.setResponse(response);
         metric.setEndTime(System.currentTimeMillis());
         metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
         metric.setThreadName(Thread.currentThread().getName());
         // metric.setHttpStatus(apiRestClient.getStatus());
         metrics.add(metric);
+    }
+
+
+    public String getJsonAsString(String fileName) {
+        InputStream stream = getClass().getClassLoader().getResourceAsStream(fileName);
+        String jsonString = "";
+        try {
+            byte[] buffer = ByteStreams.toByteArray(stream);
+            Reader reader = CharSource.wrap(new String(buffer)).openStream();
+            jsonString = CharStreams.toString(reader);
+            reader.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return jsonString;
     }
 }
 

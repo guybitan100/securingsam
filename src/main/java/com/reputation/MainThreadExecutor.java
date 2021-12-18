@@ -1,8 +1,7 @@
 package com.reputation;
 
 import com.reputation.concurrency.ThreadWorker;
-import com.reputation.conf.Configuration;
-import com.reputation.rest.RestClient;
+import com.reputation.rest.RestClientNew;
 import org.apache.log4j.Logger;
 
 import java.util.HashSet;
@@ -25,9 +24,8 @@ public class MainThreadExecutor implements Runnable {
 
     private void runClickhouse() {
         Set<Callable<ThreadWorker>> callables = new HashSet<>();
-        String clickhouseStopAllQueries = new Configuration("api.properties").get("clickhouse_stop_all_queries");
         try {
-            new RestClient(clickhouseStopAllQueries).postBase();
+            new RestClientNew().send(uri);
             for (int i = 0; i < maxTreads; i++) {
                 callables.add(new ThreadWorker(uri));
             }
@@ -46,7 +44,6 @@ public class MainThreadExecutor implements Runnable {
     }
 
     public static void main(String[] args) {
-        String uri = new Configuration("api.properties").get("domain");
-        new MainThreadExecutor(uri,10).run();
+        new MainThreadExecutor("https://candidate-eval.securingsam.com/domain/ranking/",1).run();
     }
 }
