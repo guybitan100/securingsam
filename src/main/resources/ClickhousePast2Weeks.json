@@ -1,0 +1,539 @@
+{
+  "name": "report.filter",
+  "appIds": [
+    1
+  ],
+  "timeRange": {
+    "from": "1604873100000",
+    "till": "1606064303000",
+    "timeZone": "+02:00"
+  },
+  "queries": [
+    {
+      "type": "overtime",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [],
+      "top": {
+        "limit": "10",
+        "fields": []
+      },
+      "id": "SessionsChart",
+      "dimensions": [
+        {
+          "fieldName": "TIMEBUCKET",
+          "timeBucketing": {
+            "bucketResolution": "HOUR",
+            "bucketInterval": 9
+          }
+        }
+      ],
+      "aggregations": [
+        {
+          "fieldName": "SESSIONGUID",
+          "function": "cardinality",
+          "displayName": "Sessions"
+        }
+      ],
+      "totalQuery": {
+        "compare": true,
+        "activeFiveMinSessions": true
+      }
+    },
+    {
+      "type": "overtime",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [
+        {
+          "type": "multi",
+          "name": "BCTYPE",
+          "comparisonOperator": "ANY",
+          "value": [
+            "documentLoad"
+          ]
+        }
+      ],
+      "top": {
+        "limit": "10",
+        "fields": []
+      },
+      "id": "PageViewChart",
+      "dimensions": [
+        {
+          "fieldName": "TIMEBUCKET",
+          "timeBucketing": {
+            "bucketResolution": "HOUR",
+            "bucketInterval": 9
+          }
+        }
+      ],
+      "aggregations": [
+        {
+          "function": "count",
+          "fieldName": "HITS",
+          "displayName": "Pageviews"
+        }
+      ],
+      "totalQuery": {
+        "compare": true,
+        "aggregations": [
+          {
+            "function": "count",
+            "fieldName": "HITS"
+          }
+        ]
+      }
+    },
+    {
+      "type": "overtime",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [
+        {
+          "type": "multi",
+          "name": "BCTYPE",
+          "comparisonOperator": "ANY",
+          "value": [
+            "ajaxRequest"
+          ]
+        }
+      ],
+      "top": {
+        "limit": "10",
+        "fields": []
+      },
+      "id": "AjaxCallsChart",
+      "dimensions": [
+        {
+          "fieldName": "TIMEBUCKET",
+          "timeBucketing": {
+            "bucketResolution": "HOUR",
+            "bucketInterval": 9
+          }
+        }
+      ],
+      "aggregations": [
+        {
+          "function": "count",
+          "fieldName": "HITS",
+          "displayName": "Ajax Calls"
+        }
+      ],
+      "totalQuery": {
+        "compare": true,
+        "aggregations": [
+          {
+            "function": "count",
+            "fieldName": "HITS"
+          }
+        ]
+      }
+    },
+    {
+      "type": "overtime",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [],
+      "top": {
+        "limit": "10",
+        "fields": []
+      },
+      "id": "AvailabilityChart",
+      "dimensions": [
+        {
+          "fieldName": "TIMEBUCKET",
+          "timeBucketing": {
+            "bucketResolution": "HOUR",
+            "bucketInterval": 9
+          }
+        }
+      ],
+      "aggregations": [
+        {
+          "fieldName": "SESSIONGUID",
+          "function": "availability",
+          "displayName": "Availability"
+        }
+      ],
+      "totalQuery": {
+        "compare": true,
+        "aggregations": [
+          {
+            "fieldName": "SESSIONGUID",
+            "function": "availability"
+          }
+        ]
+      }
+    },
+    {
+      "type": "overtime",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [],
+      "top": {
+        "limit": "10",
+        "fields": []
+      },
+      "id": "RevenueChart",
+      "dimensions": [
+        {
+          "fieldName": "TIMEBUCKET",
+          "timeBucketing": {
+            "bucketResolution": "HOUR",
+            "bucketInterval": 9
+          }
+        }
+      ],
+      "aggregations": [
+        {
+          "function": "sum",
+          "fieldName": "revenue",
+          "displayName": "Revenue"
+        }
+      ],
+      "totalQuery": {
+        "compare": true,
+        "aggregations": [
+          {
+            "function": "sum",
+            "fieldName": "revenue"
+          }
+        ]
+      }
+    },
+    {
+      "type": "overtime",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [
+        {
+          "type": "value",
+          "name": "BCTYPE",
+          "comparisonOperator": "EQUAL",
+          "value": "performance"
+        }
+      ],
+      "top": {
+        "limit": "10",
+        "fields": []
+      },
+      "id": "AverageLoadTimeChart",
+      "dimensions": [
+        {
+          "fieldName": "TIMEBUCKET",
+          "timeBucketing": {
+            "bucketResolution": "HOUR",
+            "bucketInterval": 9
+          }
+        }
+      ],
+      "aggregations": [
+        {
+          "function": "average",
+          "fieldName": "PAGELOADTIME",
+          "displayName": "Average Page Load Time"
+        },
+        {
+          "function": "average",
+          "fieldName": "TTFB",
+          "displayName": "Average TTFB Performance"
+        },
+        {
+          "function": "average",
+          "fieldName": "RENDERTIME",
+          "displayName": "Average Rendering Performance"
+        }
+      ],
+      "totalQuery": {
+        "compare": true,
+        "aggregations": [
+          {
+            "function": "average",
+            "fieldName": "PAGELOADTIME"
+          },
+          {
+            "function": "average",
+            "fieldName": "TTFB"
+          },
+          {
+            "function": "average",
+            "fieldName": "RENDERTIME"
+          }
+        ]
+      }
+    },
+    {
+      "type": "overtime",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [
+        {
+          "type": "value",
+          "name": "STRUGGLESEVER",
+          "comparisonOperator": "NOT_EQUAL",
+          "value": null
+        }
+      ],
+      "top": {
+        "fields": [],
+        "createOtherDim": true,
+        "limit": "10"
+      },
+      "id": "SessionStrugglesChart",
+      "dimensions": [
+        {
+          "fieldName": "TIMEBUCKET",
+          "timeBucketing": {
+            "bucketResolution": "HOUR",
+            "bucketInterval": 9
+          }
+        },
+        {
+          "fieldName": "STRUGGLETYPE"
+        }
+      ],
+      "aggregations": [
+        {
+          "fieldName": "SESSIONGUID",
+          "function": "cardinality",
+          "displayName": "Sessions with Struggles"
+        }
+      ],
+      "totalQuery": {
+        "compare": false,
+        "aggregations": [
+          {
+            "fieldName": "SESSIONGUID",
+            "function": "cardinality"
+          }
+        ]
+      }
+    },
+    {
+      "type": "overtime",
+      "context": "beacon_event",
+      "compositeAggregations": [
+        {
+          "topRelation": {
+            "relation": "ratio",
+            "subRelations": [
+              {
+                "aggregationQuery": {
+                  "filters": [],
+                  "dimensions": [],
+                  "aggregations": [
+                    {
+                      "function": "sum",
+                      "fieldName": "revenue"
+                    }
+                  ]
+                }
+              },
+              {
+                "aggregationQuery": {
+                  "filters": [],
+                  "dimensions": [],
+                  "aggregations": [
+                    {
+                      "fieldName": "SESSIONGUID",
+                      "function": "cardinality"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "filters": [],
+      "top": {
+        "limit": "10",
+        "fields": []
+      },
+      "id": "AverageRevenueSessionChart",
+      "aggregations": [],
+      "dimensions": [
+        {
+          "fieldName": "TIMEBUCKET",
+          "timeBucketing": {
+            "bucketResolution": "HOUR",
+            "bucketInterval": 9
+          }
+        }
+      ],
+      "totalQuery": {
+        "compare": true
+      }
+    },
+    {
+      "type": "summary",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [
+        {
+          "type": "value",
+          "name": "BCTYPE",
+          "comparisonOperator": "EQUAL",
+          "value": "performance"
+        }
+      ],
+      "top": {
+        "limit": "10",
+        "fields": [
+          {
+            "order": "DESC",
+            "fieldName": "aggregations_sum"
+          }
+        ]
+      },
+      "id": "WorstPerformingPagesChart",
+      "dimensions": [
+        {
+          "fieldName": "BCURL",
+          "aliasName": "Worst Page"
+        }
+      ],
+      "aggregations": [
+        {
+          "function": "average",
+          "fieldName": "TTFB",
+          "displayName": "Worst Performing Pages"
+        },
+        {
+          "function": "average",
+          "fieldName": "RENDERTIME",
+          "displayName": "Worst Performing Pages"
+        },
+        {
+          "function": "average",
+          "fieldName": "PAGELOADTIME",
+          "displayName": "Worst Performing Pages"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [],
+      "top": {
+        "limit": "10",
+        "fields": [
+          {
+            "order": "DESC",
+            "fieldName": "AJXDURATION",
+            "function": "average"
+          }
+        ]
+      },
+      "id": "WorstPerformanceAjaxChart",
+      "dimensions": [
+        {
+          "fieldName": "AJXURL"
+        }
+      ],
+      "aggregations": [
+        {
+          "function": "average",
+          "fieldName": "AJXDURATION",
+          "displayName": "Worst Performing Ajax Calls"
+        },
+        {
+          "function": "count",
+          "fieldName": "*",
+          "displayName": "Worst Performing Ajax Calls"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [
+        {
+          "type": "value",
+          "name": "STRUGGLESEVER",
+          "comparisonOperator": "EQUAL",
+          "value": "error"
+        }
+      ],
+      "top": {
+        "fields": [],
+        "useFirstDimCount": true,
+        "limit": "10"
+      },
+      "id": "WorstPagesAvailabilityIssuesChart",
+      "dimensions": [
+        {
+          "fieldName": "BCURL"
+        },
+        {
+          "fieldName": "STRUGGLETYPE"
+        }
+      ],
+      "aggregations": [
+        {
+          "function": "count",
+          "displayName": "Worst Pages with Availability Issues",
+          "fieldName": "STRUGGLETYPE"
+        }
+      ]
+    },
+    {
+      "type": "summary",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [],
+      "top": {
+        "limit": "10",
+        "fields": []
+      },
+      "id": "StruggleGaugeChart",
+      "dimensions": [
+        {
+          "fieldName": "TIMEBUCKET",
+          "timeBucketing": {
+            "bucketResolution": "HOUR",
+            "bucketInterval": 9
+          }
+        }
+      ],
+      "aggregations": [
+        {
+          "function": "average",
+          "fieldName": "SESSIONSTRUGGLESCORE",
+          "displayName": "Struggle Score"
+        }
+      ],
+      "totalQuery": {
+        "compare": true
+      }
+    },
+    {
+      "type": "summary",
+      "context": "beacon_event",
+      "compositeAggregations": [],
+      "filters": [],
+      "top": {
+        "limit": "10",
+        "fields": []
+      },
+      "id": "GaugeBounceChart",
+      "dimensions": [],
+      "aggregations": [
+        {
+          "fieldName": "SESSIONGUID",
+          "function": "bounceRate",
+          "displayName": "Bounce Rate"
+        }
+      ],
+      "totalQuery": {
+        "compare": true,
+        "comparePercentage": true
+      }
+    }
+  ],
+  "topLevelFilters": [],
+  "perspective": "client"
+}
