@@ -2,8 +2,6 @@ package com.reputation.models;
 
 import com.reputation.pojo.Response;
 
-import java.net.http.HttpResponse;
-
 public class Metric {
     String threadName;
     long startTime = 0;
@@ -68,7 +66,7 @@ public class Metric {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("ThreadName: " + threadName);
+        sb.append("ThreadName: " + getThreadName());
         sb.append(" DurationSec: " + getDurationMs() / 1000);
         sb.append(" ReportStatus: " + getReportStatus());
         sb.append(" HttpStatusCode: " + getStatusCode());
