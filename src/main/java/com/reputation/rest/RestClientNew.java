@@ -23,6 +23,7 @@ public class RestClientNew {
     public HttpResponse send(String url) throws IOException, InterruptedException, URISyntaxException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(url))
+                .header("Authorization","Token I_am_under_stress_when_I_test")
                 .timeout(Duration.of(10, SECONDS))
                 .GET()
                 .build();

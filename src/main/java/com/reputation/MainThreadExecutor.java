@@ -4,6 +4,7 @@ import com.reputation.concurrency.ThreadWorker;
 import com.reputation.rest.RestClientNew;
 import org.apache.log4j.Logger;
 
+import java.net.http.HttpResponse;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,10 +23,10 @@ public class MainThreadExecutor implements Runnable {
         executorService = Executors.newFixedThreadPool(maxTreads);
     }
 
-    private void runClickhouse() {
+    private void runDomains() {
         Set<Callable<ThreadWorker>> callables = new HashSet<>();
         try {
-            new RestClientNew().send(uri);
+            HttpResponse response = new RestClientNew().send(uri);
             for (int i = 0; i < maxTreads; i++) {
                 callables.add(new ThreadWorker(uri));
             }
@@ -40,7 +41,7 @@ public class MainThreadExecutor implements Runnable {
 
     @Override
     public void run() {
-        runClickhouse();
+        runDomains();
     }
 
     public static void main(String[] args) {
