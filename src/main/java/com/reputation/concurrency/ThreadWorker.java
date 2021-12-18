@@ -12,8 +12,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 
@@ -22,18 +20,18 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class ThreadWorker implements Callable {
     final static Logger log4j = Logger.getLogger(ThreadWorker.class);
-    private List<Metric> metrics;
+    private ArrayBlockingQueue<Metric> metrics;
     private final ArrayBlockingQueue abq;
     private final String baseUrl = "https://candidate-eval.securingsam.com/domain/ranking/";
     private final String token = "Token I_am_under_stress_when_I_test";
 
-    public ThreadWorker(ArrayBlockingQueue abq) {
+    public ThreadWorker(ArrayBlockingQueue<Metric> metrics, ArrayBlockingQueue abq) {
         this.abq = abq;
-        metrics = new ArrayList<>();
+        this.metrics = metrics;
     }
 
     @Override
-    public List<Metric> call() {
+    public ArrayBlockingQueue<Metric> call() {
         try {
             execute();
         } catch (Exception e) {
@@ -59,7 +57,6 @@ public class ThreadWorker implements Callable {
         metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
         metric.setThreadName(Thread.currentThread().getName());
         metric.setStatusCode(response.statusCode());
-        System.out.println(response.body());
         metrics.add(metric);
     }
 }
