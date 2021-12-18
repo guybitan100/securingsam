@@ -49,12 +49,13 @@ public class ThreadWorker implements Callable {
                 .timeout(Duration.of(10, SECONDS))
                 .GET()
                 .build();
-        HttpResponse response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        metric.setResponse(response);
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        metric.setResponse(response.body());
         metric.setEndTime(System.currentTimeMillis());
         metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
         metric.setThreadName(Thread.currentThread().getName());
         metric.setStatusCode(response.statusCode());
+        System.out.println(response.body());
         metrics.add(metric);
     }
 }

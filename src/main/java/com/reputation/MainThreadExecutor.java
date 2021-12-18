@@ -27,7 +27,7 @@ public class MainThreadExecutor implements Runnable {
             for (int i = 0; i < maxTreads; i++) {
                 callables.add(new ThreadWorker(uri));
             }
-            List<Future<ThreadWorker>> futures = executorService.invokeAll(callables);
+            executorService.invokeAll(callables);
             executorService.shutdown();
 
         } catch (Exception e) {
@@ -42,6 +42,6 @@ public class MainThreadExecutor implements Runnable {
     }
 
     public static void main(String[] args) {
-        new MainThreadExecutor("https://candidate-eval.securingsam.com/domain/ranking/google.com", 1).run();
+        new MainThreadExecutor("https://candidate-eval.securingsam.com/domain/ranking/google.com", 100).run();
     }
 }

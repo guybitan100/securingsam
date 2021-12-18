@@ -7,7 +7,7 @@ public class Metric {
     long startTime = 0;
     long endTime = 0;
     long durationMs;
-    HttpResponse response;
+    String response;
     int statusCode;
     String reportStatus;
 
@@ -51,11 +51,11 @@ public class Metric {
         this.statusCode = statusCode;
     }
 
-    public Object getResponse() {
+    public String getResponse() {
         return response;
     }
 
-    public void setResponse(HttpResponse response) {
+    public void setResponse(String response) {
         this.response = response;
     }
 
