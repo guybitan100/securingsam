@@ -35,7 +35,7 @@ public class MainThreadExecutor implements Runnable {
         try {
             new RestClient(clickhouseStopAllQueries).postBase();
             for (int i = 0; i < maxTreads; i++) {
-                callables.add(new ThreadWorker(uri, jsonFileName, executions));
+                callables.add(new ThreadWorker(uri));
             }
             List<Future<ThreadWorker>> futures = executorService.invokeAll(callables);
             executorService.shutdown();

@@ -9,36 +9,32 @@ import com.reputation.rest.RestClient;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharSource;
 import com.google.common.io.CharStreams;
+import com.reputation.rest.RestClientNew;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+
 
 public class ThreadWorker implements Callable {
     public final Configuration conf;
     final static Logger log4j = Logger.getLogger(ThreadWorker.class);
     private List<Metric> metrics;
     private final String uri;
-    private final String jsonFileName;
-    private final int executions;
     private final Gson gson;
 
-    public ThreadWorker(String uri, String jsonFileName, int executions) {
+    public ThreadWorker(String uri) {
         conf = new Configuration("api.properties");
         RestClient.disableSslVerification();
         this.uri = uri;
-        if (!jsonFileName.endsWith(".json")) {
-            jsonFileName = jsonFileName + ".json";
-        }
-        this.jsonFileName = jsonFileName;
-        this.executions = executions;
         metrics = new ArrayList<>();
-        gson = new Gson();
+        this.gson = new Gson();
     }
 
     public synchronized RestClient getBaseLogin() {
@@ -73,21 +69,17 @@ public class ThreadWorker implements Callable {
         return metrics;
     }
 
-    public void execute() {
-        RestClient.disableSslVerification();
-        RestClient apiRestClient = getBaseLogin();
-        for (int i = 0; i < executions; i++) {
-            Metric metric = new Metric();
-            metric.setStartTime(System.currentTimeMillis());
-            String stringResponse = apiRestClient.post(uri, getJsonAsString(jsonFileName));
-            Response response = gson.fromJson(stringResponse, Response.class);
-            metric.setResponse(response);
-            metric.setEndTime(System.currentTimeMillis());
-            metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
-            metric.setThreadName(Thread.currentThread().getName() + "-" + (i+1));
-            metric.setHttpStatus(apiRestClient.getStatus());
-            metrics.add(metric);
-        }
+    public void execute() throws URISyntaxException, IOException, InterruptedException {
+        RestClientNew restClientNew = new RestClientNew();
+        Metric metric = new Metric();
+        metric.setStartTime(System.currentTimeMillis());
+        restClientNew.send(uri);
+        //metric.setResponse(response);
+        metric.setEndTime(System.currentTimeMillis());
+        metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
+        metric.setThreadName(Thread.currentThread().getName());
+        // metric.setHttpStatus(apiRestClient.getStatus());
+        metrics.add(metric);
     }
 }
 
