@@ -1,6 +1,5 @@
 package com.reputation.concurrency;
 
-import com.google.gson.Gson;
 import com.reputation.models.Metric;
 import org.apache.log4j.Logger;
 
@@ -23,12 +22,12 @@ public class ThreadWorker implements Callable {
     final static Logger log4j = Logger.getLogger(ThreadWorker.class);
     private List<Metric> metrics;
     private final ArrayBlockingQueue abq;
-    private final Gson gson;
+    private final String baseUrl = "https://candidate-eval.securingsam.com/domain/ranking/";
+    private final String token = "Token I_am_under_stress_when_I_test";
 
     public ThreadWorker(ArrayBlockingQueue abq) {
         this.abq = abq;
         metrics = new ArrayList<>();
-        this.gson = new Gson();
     }
 
     @Override
@@ -45,8 +44,8 @@ public class ThreadWorker implements Callable {
         Metric metric = new Metric();
         metric.setStartTime(System.currentTimeMillis());
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI("https://candidate-eval.securingsam.com/domain/ranking/" + abq.poll().toString()))
-                .header("Authorization", "Token I_am_under_stress_when_I_test")
+                .uri(new URI(baseUrl + abq.poll().toString()))
+                .header("Authorization", token)
                 .timeout(Duration.of(10, SECONDS))
                 .GET()
                 .build();
