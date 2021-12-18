@@ -78,6 +78,6 @@ public class MainThreadExecutor implements Runnable {
     }
 
     public static void main(String[] args) {
-        new MainThreadExecutor(100, 100).run();
+        new MainThreadExecutor(500, 100).run();
     }
 }
