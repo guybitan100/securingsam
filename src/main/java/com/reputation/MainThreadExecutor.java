@@ -57,7 +57,7 @@ public class MainThreadExecutor implements Runnable {
         Set<Callable<ThreadWorker>> callables = new HashSet<>();
         try {
             for (int i = 0; i < maxTreads; i++) {
-                callables.add(new ThreadWorker("uri"));
+                callables.add(new ThreadWorker(abq));
             }
             executorService.invokeAll(callables);
             executorService.shutdown();
@@ -78,6 +78,6 @@ public class MainThreadExecutor implements Runnable {
     }
 
     public static void main(String[] args) {
-        new MainThreadExecutor(5, 100).run();
+        new MainThreadExecutor(100, 100).run();
     }
 }

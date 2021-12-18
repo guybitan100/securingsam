@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -21,11 +22,11 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 public class ThreadWorker implements Callable {
     final static Logger log4j = Logger.getLogger(ThreadWorker.class);
     private List<Metric> metrics;
-    private final String uri;
+    private final ArrayBlockingQueue abq;
     private final Gson gson;
 
-    public ThreadWorker(String uri) {
-        this.uri = uri;
+    public ThreadWorker(ArrayBlockingQueue abq) {
+        this.abq = abq;
         metrics = new ArrayList<>();
         this.gson = new Gson();
     }
@@ -44,7 +45,7 @@ public class ThreadWorker implements Callable {
         Metric metric = new Metric();
         metric.setStartTime(System.currentTimeMillis());
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(uri))
+                .uri(new URI("https://candidate-eval.securingsam.com/domain/ranking/" + abq.poll().toString()))
                 .header("Authorization", "Token I_am_under_stress_when_I_test")
                 .timeout(Duration.of(10, SECONDS))
                 .GET()
