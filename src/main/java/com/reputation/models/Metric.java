@@ -1,5 +1,7 @@
 package com.reputation.models;
 
+import com.reputation.pojo.Response;
+
 import java.net.http.HttpResponse;
 
 public class Metric {
@@ -7,7 +9,7 @@ public class Metric {
     long startTime = 0;
     long endTime = 0;
     long durationMs;
-    String response;
+    Response response;
     int statusCode;
     String reportStatus;
 
@@ -51,11 +53,7 @@ public class Metric {
         this.statusCode = statusCode;
     }
 
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
+    public void setResponse(Response response) {
         this.response = response;
     }
 

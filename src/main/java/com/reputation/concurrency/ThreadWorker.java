@@ -1,6 +1,8 @@
 package com.reputation.concurrency;
 
+import com.google.gson.Gson;
 import com.reputation.models.Metric;
+import com.reputation.pojo.Response;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -41,6 +43,7 @@ public class ThreadWorker implements Callable {
     }
 
     public void execute() throws URISyntaxException, IOException, InterruptedException {
+        Gson gson = new Gson();
         Metric metric = new Metric();
         metric.setStartTime(System.currentTimeMillis());
         HttpRequest request = HttpRequest.newBuilder()
@@ -50,7 +53,8 @@ public class ThreadWorker implements Callable {
                 .GET()
                 .build();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        metric.setResponse(response.body());
+        Response responseJson = gson.fromJson(response.body(), Response.class);
+        metric.setResponse(responseJson);
         metric.setEndTime(System.currentTimeMillis());
         metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
         metric.setThreadName(Thread.currentThread().getName());
