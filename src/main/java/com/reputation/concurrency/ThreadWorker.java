@@ -45,7 +45,7 @@ public class ThreadWorker implements Callable {
         RestClientNew restClientNew = new RestClientNew();
         Metric metric = new Metric();
         metric.setStartTime(System.currentTimeMillis());
-        restClientNew.send("https://candidate-eval.securingsam.com/domain/ranking/google.com");
+        restClientNew.send(uri);
         //metric.setResponse(response);
         metric.setEndTime(System.currentTimeMillis());
         metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
