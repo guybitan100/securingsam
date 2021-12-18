@@ -9,7 +9,6 @@ public class Metric {
     long durationMs;
     Response response;
     int statusCode;
-    String reportStatus;
 
     public String getThreadName() {
         return threadName;
@@ -55,20 +54,12 @@ public class Metric {
         this.response = response;
     }
 
-    public String getReportStatus() {
-        return reportStatus;
-    }
-
-    public void setReportStatus(String reportStatus) {
-        this.reportStatus = reportStatus;
-    }
 
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("ThreadName: " + getThreadName());
         sb.append(" DurationSec: " + getDurationMs() / 1000);
-        sb.append(" ReportStatus: " + getReportStatus());
         sb.append(" HttpStatusCode: " + getStatusCode());
         return sb.toString();
     }

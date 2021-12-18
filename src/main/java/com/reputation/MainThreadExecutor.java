@@ -48,13 +48,12 @@ public class MainThreadExecutor implements Runnable {
             for (int i = 0; i < maxDomains; i++) {
                 abq.add(allDomains.get(i)[0]);
             }
-            System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void runDomains() throws URISyntaxException {
+    private void runAllDomains() throws URISyntaxException {
         readAllDataAtOnce();
         Set<Callable<ThreadWorker>> callables = new HashSet<>();
         try {
@@ -72,7 +71,8 @@ public class MainThreadExecutor implements Runnable {
     @Override
     public void run() {
         try {
-            runDomains();
+            runAllDomains();
+            System.out.println(metrics);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
