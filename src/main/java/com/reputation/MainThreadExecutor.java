@@ -5,6 +5,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.reputation.concurrency.ThreadWorker;
 import com.reputation.models.Metric;
 import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileReader;
 import java.net.URISyntaxException;
@@ -21,13 +22,15 @@ public class MainThreadExecutor implements Runnable {
     public int maxTreads;
     private final ExecutorService executorService;
     private final int maxDomains;
-    private ArrayBlockingQueue<String> abq;
+    private final ArrayBlockingQueue<String> abq;
+    private ArrayBlockingQueue<Metric> metrics;
 
     public MainThreadExecutor(int maxDomains, int maxTreads) {
         this.maxTreads = maxTreads;
         this.maxDomains = maxDomains;
         this.executorService = Executors.newFixedThreadPool(maxTreads);
         this.abq = new ArrayBlockingQueue<>(maxDomains);
+        this.metrics = new ArrayBlockingQueue<>(500);
     }
 
     public void readAllDataAtOnce() throws URISyntaxException {
@@ -53,7 +56,6 @@ public class MainThreadExecutor implements Runnable {
 
     private void runDomains() throws URISyntaxException {
         readAllDataAtOnce();
-        ArrayBlockingQueue<Metric> metrics = new ArrayBlockingQueue<Metric>(500);
         Set<Callable<ThreadWorker>> callables = new HashSet<>();
         try {
             for (int i = 0; i < maxTreads; i++) {
