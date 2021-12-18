@@ -5,8 +5,11 @@ import com.opencsv.CSVReaderBuilder;
 import com.reputation.concurrency.ThreadWorker;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.FileReader;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,25 +30,29 @@ public class MainThreadExecutor implements Runnable {
         this.abq = new ArrayBlockingQueue<>(maxDomains);
     }
 
-    public void readAllDataAtOnce() {
+    public void readAllDataAtOnce() throws URISyntaxException {
         URL resource = MainThreadExecutor.class.getClassLoader().getResource("top500Domains.csv");
         if (resource == null) {
             throw new IllegalArgumentException("file not found!");
         }
+        File file = Paths.get(resource.toURI()).toFile();
         try {
-            FileReader filereader = new FileReader(String.valueOf(resource.toURI()));
+            FileReader filereader = new FileReader(file.getAbsolutePath());
             CSVReader csvReader = new CSVReaderBuilder(filereader)
                     .withSkipLines(1)
                     .build();
-            List<String[]> allData = csvReader.readAll();
-
+            List<String[]> allDomains = csvReader.readAll();
+            for (int i = 0; i < maxDomains; i++) {
+                abq.add(allDomains.get(i)[0]);
+            }
+            System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    private void runDomains() {
+    private void runDomains() throws URISyntaxException {
         readAllDataAtOnce();
         Set<Callable<ThreadWorker>> callables = new HashSet<>();
         try {
@@ -63,7 +70,11 @@ public class MainThreadExecutor implements Runnable {
 
     @Override
     public void run() {
-        runDomains();
+        try {
+            runDomains();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
