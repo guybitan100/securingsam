@@ -42,6 +42,6 @@ public class MainThreadExecutor implements Runnable {
     }
 
     public static void main(String[] args) {
-        new MainThreadExecutor("https://candidate-eval.securingsam.com/domain/ranking/google.com",1).run();
+        new MainThreadExecutor("https://candidate-eval.securingsam.com/domain/ranking/google.com", 1).run();
     }
 }

@@ -2,14 +2,9 @@ package com.reputation.concurrency;
 
 import com.google.gson.Gson;
 import com.reputation.models.Metric;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.CharSource;
-import com.google.common.io.CharStreams;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -61,21 +56,6 @@ public class ThreadWorker implements Callable {
         metric.setThreadName(Thread.currentThread().getName());
         metric.setStatusCode(response.statusCode());
         metrics.add(metric);
-    }
-
-
-    public String getJsonAsString(String fileName) {
-        InputStream stream = getClass().getClassLoader().getResourceAsStream(fileName);
-        String jsonString = "";
-        try {
-            byte[] buffer = ByteStreams.toByteArray(stream);
-            Reader reader = CharSource.wrap(new String(buffer)).openStream();
-            jsonString = CharStreams.toString(reader);
-            reader.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        return jsonString;
     }
 }
 

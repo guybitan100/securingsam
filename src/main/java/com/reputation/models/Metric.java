@@ -1,7 +1,5 @@
 package com.reputation.models;
 
-import org.springframework.http.HttpStatus;
-
 import java.net.http.HttpResponse;
 
 public class Metric {
