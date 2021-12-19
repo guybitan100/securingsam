@@ -22,18 +22,17 @@ public class MainThreadExecutor implements Runnable {
     public int maxTreads;
     private final ExecutorService executorService;
     private final int maxDomains;
-    private final ArrayBlockingQueue<String> abq;
     private ArrayBlockingQueue<Metric> metrics;
 
     public MainThreadExecutor(int maxDomains, int maxTreads) {
         this.maxTreads = maxTreads;
         this.maxDomains = maxDomains;
         this.executorService = Executors.newFixedThreadPool(maxTreads);
-        this.abq = new ArrayBlockingQueue<>(maxDomains);
         this.metrics = new ArrayBlockingQueue<>(500);
     }
 
-    public void readAllDataAtOnce() throws URISyntaxException {
+    public ArrayBlockingQueue<String> readAllDataAtOnce() throws URISyntaxException {
+        ArrayBlockingQueue<String> abq = new ArrayBlockingQueue<>(maxDomains);
         URL resource = MainThreadExecutor.class.getClassLoader().getResource("top500Domains.csv");
         if (resource == null) {
             throw new IllegalArgumentException("file not found!");
@@ -51,14 +50,14 @@ public class MainThreadExecutor implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return abq;
     }
 
     private void runAllDomains() throws URISyntaxException {
-        readAllDataAtOnce();
         Set<Callable<ThreadWorker>> callables = new HashSet<>();
         try {
             for (int i = 0; i < maxTreads; i++) {
-                callables.add(new ThreadWorker(metrics, abq));
+                callables.add(new ThreadWorker(metrics, readAllDataAtOnce()));
             }
             executorService.invokeAll(callables);
             executorService.shutdown();

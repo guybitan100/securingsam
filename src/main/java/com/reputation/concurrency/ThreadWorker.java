@@ -12,6 +12,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 
@@ -45,7 +47,7 @@ public class ThreadWorker implements Callable {
         Metric metric = new Metric();
         metric.setStartTime(System.currentTimeMillis());
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(baseUrl + abq.poll().toString()))
+                .uri(new URI(baseUrl + abq.poll()))
                 .header("Authorization", token)
                 .timeout(Duration.of(10, SECONDS))
                 .GET()
