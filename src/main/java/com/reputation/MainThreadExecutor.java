@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,15 +22,20 @@ import java.util.concurrent.*;
 public class MainThreadExecutor implements Runnable {
     final static Logger log4j = Logger.getLogger(MainThreadExecutor.class);
     public int maxTreads;
+    private Duration timeout;
     private LinkedBlockingDeque<Metric> metrics;
+    private long starTimeMs = 0;
+    private long endTimeMs = 0;
     private ExecutorService executorService;
     private int maxDomains;
 
-    public MainThreadExecutor(int maxDomains, int maxTreads) {
+    public MainThreadExecutor(int maxDomains, int maxTreads, int timeOut) {
+        this.timeout = Duration.ofSeconds(timeOut);
         this.maxTreads = maxTreads;
         this.maxDomains = maxDomains;
         this.executorService = Executors.newFixedThreadPool(maxTreads);
         this.metrics = new LinkedBlockingDeque<>();
+        this.starTimeMs = System.currentTimeMillis();
     }
 
     public ArrayList<String> readAllDataAtOnce() throws URISyntaxException {
@@ -62,6 +68,7 @@ public class MainThreadExecutor implements Runnable {
             }
             executorService.invokeAll(callables);
             executorService.shutdown();
+            executorService.awaitTermination(timeout.toMillis(), TimeUnit.MILLISECONDS);
 
         } catch (InterruptedException interruptedException) {
             System.out.println("Test is over!");
@@ -69,8 +76,10 @@ public class MainThreadExecutor implements Runnable {
         } catch (Exception e) {
             log4j.debug(e);
         }
+        this.endTimeMs = System.currentTimeMillis();
         System.out.println("Test is over!");
         System.out.println("Reason: timeout");
+        System.out.println("Time in total: " + (endTimeMs - starTimeMs) / 1000 + " Seconds");
         System.out.println("Requests in total: " + metrics.size());
 
         int metrics_total_time = 0;
@@ -81,7 +90,6 @@ public class MainThreadExecutor implements Runnable {
                 max_time = metric.getDurationMs();
             }
         }
-        System.out.println("Time in total: " + metrics_total_time / 1000 + " Seconds");
         System.out.println("Max time for one request: " + max_time / 1000 + " Seconds");
         System.out.println("Average time for one request: " + (metrics_total_time / metrics.size()) / 1000 + " Seconds");
     }
@@ -97,6 +105,6 @@ public class MainThreadExecutor implements Runnable {
     }
 
     public static void main(String[] args) {
-        new MainThreadExecutor(100, 10).run();
+        new MainThreadExecutor(100, 10,100).run();
     }
 }
