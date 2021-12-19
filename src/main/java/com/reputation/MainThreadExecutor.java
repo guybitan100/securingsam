@@ -104,7 +104,5 @@ public class MainThreadExecutor implements Runnable {
         }
     }
 
-    public static void main(String[] args) {
-        new MainThreadExecutor(100, 10,100).run();
-    }
+
 }
