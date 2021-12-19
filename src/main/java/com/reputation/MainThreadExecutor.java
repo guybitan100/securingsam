@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,19 +21,22 @@ import java.util.concurrent.*;
 public class MainThreadExecutor implements Runnable {
     final static Logger log4j = Logger.getLogger(MainThreadExecutor.class);
     public int maxTreads;
-    private final ExecutorService executorService;
-    private final int maxDomains;
-    private ArrayBlockingQueue<Metric> metrics;
+    private LinkedBlockingDeque<Metric> metrics;
+    private long starTimeMs = 0;
+    private long endTimeMs = 0;
+    private ExecutorService executorService;
+    private int maxDomains;
 
     public MainThreadExecutor(int maxDomains, int maxTreads) {
         this.maxTreads = maxTreads;
         this.maxDomains = maxDomains;
         this.executorService = Executors.newFixedThreadPool(maxTreads);
-        this.metrics = new ArrayBlockingQueue<>(500);
+        this.metrics = new LinkedBlockingDeque<>();
+        this.starTimeMs = System.currentTimeMillis();
     }
 
-    public ArrayBlockingQueue<String> readAllDataAtOnce() throws URISyntaxException {
-        ArrayBlockingQueue<String> abq = new ArrayBlockingQueue<>(maxDomains);
+    public ArrayList<String> readAllDataAtOnce() throws URISyntaxException {
+        ArrayList<String> abq = new ArrayList<>();
         URL resource = MainThreadExecutor.class.getClassLoader().getResource("top500Domains.csv");
         if (resource == null) {
             throw new IllegalArgumentException("file not found!");
@@ -57,14 +61,22 @@ public class MainThreadExecutor implements Runnable {
         Set<Callable<ThreadWorker>> callables = new HashSet<>();
         try {
             for (int i = 0; i < maxTreads; i++) {
-                callables.add(new ThreadWorker(metrics, readAllDataAtOnce()));
+                callables.add(new ThreadWorker(metrics, maxDomains, readAllDataAtOnce()));
             }
             executorService.invokeAll(callables);
             executorService.shutdown();
 
+        } catch (InterruptedException interruptedException) {
+            System.out.println("Test is over!");
+            System.out.println("Reason: keyboard interrupt");
         } catch (Exception e) {
             log4j.debug(e);
         }
+        this.endTimeMs = System.currentTimeMillis();
+        System.out.println("Test is over!");
+        System.out.println("Reason: timeout");
+        System.out.println("Time in total: " + (endTimeMs - starTimeMs) / 1000 + " Seconds");
+        System.out.println("Requests in total: " + metrics.size());
     }
 
     @Override
@@ -78,6 +90,6 @@ public class MainThreadExecutor implements Runnable {
     }
 
     public static void main(String[] args) {
-        new MainThreadExecutor(500, 100).run();
+        new MainThreadExecutor(100, 10).run();
     }
 }

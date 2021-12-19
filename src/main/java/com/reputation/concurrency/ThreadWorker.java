@@ -12,28 +12,30 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.List;
-import java.util.Queue;
+import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
 
 public class ThreadWorker implements Callable {
     final static Logger log4j = Logger.getLogger(ThreadWorker.class);
-    private ArrayBlockingQueue<Metric> metrics;
-    private final ArrayBlockingQueue abq;
+    private LinkedBlockingDeque<Metric> metrics;
+    private final ArrayList<String> domainList;
     private final String baseUrl = "https://candidate-eval.securingsam.com/domain/ranking/";
     private final String token = "Token I_am_under_stress_when_I_test";
+    private int maxDomain;
 
-    public ThreadWorker(ArrayBlockingQueue<Metric> metrics, ArrayBlockingQueue abq) {
-        this.abq = abq;
+    public ThreadWorker(LinkedBlockingDeque<Metric> metrics, int maxDomain, ArrayList<String> domainList) {
+        this.domainList = domainList;
         this.metrics = metrics;
+        this.maxDomain = maxDomain;
     }
 
     @Override
-    public ArrayBlockingQueue<Metric> call() {
+    public LinkedBlockingDeque<Metric> call() {
         try {
             execute();
         } catch (Exception e) {
@@ -46,20 +48,22 @@ public class ThreadWorker implements Callable {
         Gson gson = new Gson();
         Metric metric = new Metric();
         metric.setStartTime(System.currentTimeMillis());
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(baseUrl + abq.poll()))
-                .header("Authorization", token)
-                .timeout(Duration.of(10, SECONDS))
-                .GET()
-                .build();
-        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        Response responseJson = gson.fromJson(response.body(), Response.class);
-        metric.setResponse(responseJson);
-        metric.setEndTime(System.currentTimeMillis());
-        metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
-        metric.setThreadName(Thread.currentThread().getName());
-        metric.setStatusCode(response.statusCode());
-        metrics.add(metric);
+        for (int i = 0; i < maxDomain; i++) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(baseUrl + domainList.get(i)))
+                    .header("Authorization", token)
+                    .timeout(Duration.of(10, SECONDS))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            Response responseJson = gson.fromJson(response.body(), Response.class);
+            metric.setResponse(responseJson);
+            metric.setEndTime(System.currentTimeMillis());
+            metric.setDurationMs(metric.getEndTime() - metric.getStartTime());
+            metric.setThreadName(Thread.currentThread().getName());
+            metric.setStatusCode(response.statusCode());
+            metrics.add(metric);
+        }
     }
 }
 
